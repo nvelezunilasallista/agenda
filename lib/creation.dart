@@ -1,3 +1,5 @@
+import 'package:agenda/contactModel.dart';
+import 'package:agenda/contactProvider.dart';
 import 'package:flutter/material.dart';
 
 class CreateContactPage extends StatefulWidget{
@@ -127,9 +129,21 @@ class _CreateContactPage extends State<CreateContactPage>{
     return ElevatedButton(
         onPressed: (){
           if(formKey.currentState!.validate()){
-            // GUARDAR EN SQLite
+            formKey.currentState!.save();
+            crearContacto();
+            Navigator.pop(context);
           }
         },
-        child: Text("Guardar contacto"));
+        child: Text("Guardar nuevo contacto"));
+  }
+
+  crearContacto() async{
+    ContactModel contacto =
+    ContactModel.fromValues(fistName, lastName, email, cellphoneNumber);
+    ContactProviderDB provider = ContactProviderDB();
+    await provider.init();
+
+    var id = await provider.agregarContacto(contacto);
+
   }
 }
