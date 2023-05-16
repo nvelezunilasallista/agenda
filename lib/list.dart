@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:agenda/contactCard.dart';
 import 'package:agenda/contactModel.dart';
 import 'package:agenda/contactProvider.dart';
+import 'package:agenda/contactProviderAPI.dart';
 import 'package:agenda/contactResponseModel.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 class ListPage extends StatefulWidget{
@@ -13,6 +17,22 @@ class ListPage extends StatefulWidget{
 
 class _ListPage extends State<ListPage>{
   List<Widget> listadoContactos = <Widget>[];
+  Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  @override
+  void initState(){
+    super.initState();
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+          if(result == ConnectivityResult.wifi ||
+              result == ConnectivityResult.mobile){
+            sincronizarContactos();
+          }
+    });
+
+  }
 
   @override
   Widget build (BuildContext context){
@@ -55,6 +75,23 @@ class _ListPage extends State<ListPage>{
       this.listadoContactos = contactosACargar;
     });
 
+  }
+
+  void sincronizarContactos() async {
+    ContactProviderDB cpdb = ContactProviderDB();
+    ContactProviderAPI cpapi = ContactProviderAPI();
+
+    await cpdb.init();
+
+    ContactResponseModel contactosPorSincronizar =
+      await cpdb.obtenerContactosPorSincronizar();
+
+    for ( int i = 0;
+    i < contactosPorSincronizar.listaContactos.length; i++){
+      await cpapi.crearContacto(contactosPorSincronizar.listaContactos[i]);
+    }
+
+    await cpdb.marcarContactosSincronizados();
   }
 
 

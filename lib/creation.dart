@@ -139,7 +139,7 @@ class _CreateContactPage extends State<CreateContactPage>{
 
   crearContacto() async{
     ContactModel contacto =
-    ContactModel.fromValues(fistName, lastName, email, cellphoneNumber);
+    ContactModel.fromValues(fistName, lastName, email, cellphoneNumber, "0");
     ContactProviderDB provider = ContactProviderDB();
     await provider.init();
 

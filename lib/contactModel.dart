@@ -6,6 +6,7 @@ class ContactModel{
     String apellidos = "";
     String email = "";
     String telefono = "";
+    String sincronizado = "";
 
     ContactModel(Map jsonResponse){
       this.id = jsonResponse["_id"];
@@ -13,14 +14,17 @@ class ContactModel{
       this.apellidos  = jsonResponse["apellidos"];
       this.email  = jsonResponse["email"];
       this.telefono  = jsonResponse["telefono"];
+      this.sincronizado = jsonResponse["sincronizado"];
     }
 
-    ContactModel.fromValues(String nombre, String apellidos, String email, String telefono){
+    ContactModel.fromValues(String nombre, String apellidos, String email,
+        String telefono, String sincronizado){
       this.id = "";
       this.nombre  = nombre;
       this.apellidos  = apellidos;
       this.email  = email;
       this.telefono  = telefono;
+      this.sincronizado = sincronizado;
     }
 
 }

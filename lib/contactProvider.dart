@@ -25,16 +25,20 @@ class ContactProviderDB{
         nombre TEXT,
         apellidos TEXT,
         email TEXT,
-        telefono TEXT);
+        telefono TEXT,
+        sincronizado TEXT);
       """);
-    }, version: 1);
+    }, version: 2);
   }
 
   agregarContacto(ContactModel contacto) async{
     await this.db!.rawInsert(""" 
-      INSERT INTO Contactos(_id, nombre, apellidos, email, telefono)
-      VALUES (?,?,?,?,?)
-    """,[contacto.id, contacto.nombre, contacto.apellidos, contacto.email, contacto.telefono]);
+      INSERT INTO Contactos(_id, nombre, apellidos, 
+      email, telefono, sincronizado)
+      VALUES (?,?,?,?,?, ?)
+    """,[contacto.id, contacto.nombre,
+      contacto.apellidos, contacto.email,
+      contacto.telefono, contacto.sincronizado]);
   }
 
   Future<ContactResponseModel> obtenerContactos() async{
@@ -47,6 +51,21 @@ class ContactProviderDB{
     return response;
   }
 
+  Future<ContactResponseModel> obtenerContactosPorSincronizar() async{
+    var results = await this.db!.rawQuery("""
+     SELECT * FROM Contactos WHERE sincronizado = '0'
+     """);
+
+    ContactResponseModel response = ContactResponseModel.fromDB(results);
+
+    return response;
+  }
+
+  marcarContactosSincronizados() async{
+    await this.db!.rawUpdate("""
+    UPDATE Contactos SET sincronizado = '1'
+    """);
+  }
 
 
 }
